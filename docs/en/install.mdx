@@ -2,35 +2,95 @@
 weight: 15
 ---
 
-:::tip
-
-If this module requires a separate installation process, you should provide installation documentation. Otherwise, this section can be omitted.
-
-Installation documentation should cover the installation process, configuration options, and uninstallation procedures. If the content is extensive, consider organizing it as a directory with multiple documents covering different aspects.
-
-For reference, you can view an [installation example](https://product-doc-guide.alauda.cn/template/installation/example.html).
-
-:::
-
 # Install
 
-## Installing XXX
+## Prerequisites
 
-Describe the prerequisites needed for installing this component.
+- ACP version: >= v4.2
+- AC CLI version: >= v1.1
+- This plugin must be installed before the global cluster failure occurs.
 
-### Installing XXX in web console
+## Download and Import
 
-Outline the process for installing the component through the web console interface.
+1. Login to AlaudaCloud and download the latest Alauda Container Platform Cluster Authentication plugin package.
 
-### Installing XXX using CLI
+2. Use violet to push the Alauda Container Platform Cluster Authentication plugin to ACP:
 
-Explain the steps for installing the component using the command line interface.
+```bash
+violet push local-auth.amd64.v4.2.0.tgz \
+  --platform-address https://<platform-address>/ \
+  --platform-username <username> \
+  --platform-password '<password>'
+```
 
-## Uninstalling XXX
+## Install via Web Console
 
-Detail the uninstallation process. Typically, this involves first removing component instances, then deleting the Operator, and finally removing the associated CRDs.
+1. Verify the upload:
 
-## Custom Configuration
+   - Navigate to Administrator > Marketplace > Upload Packages
+   - Switch to the Cluster Plugin tab
+   - Locate the uploaded plugin name
+   - The plugin details will show the version(s) of the uploaded package
 
-Describe the configuration options that can be customized during the installation process.
+2. Install the plugin:
 
+   - If the plugin shows a "ready" status, click Install
+
+## Install via CLI
+
+### 1. Check Available Versions
+
+Ensure the plugin has been published by checking for ModulePlugin and ModuleConfig resources in the `global` cluster:
+
+```shell
+# kubectl get moduleplugins |grep local-auth
+NAME      AGE
+local-auth           5d17h
+
+# kubectl get moduleconfigs -l cpaas.io/module-name=local-auth 
+NAME                                                   AGE
+local-auth    3d22h
+```
+
+This indicates that the ModulePlugin `local-auth` exists in the cluster and is available for installation.
+
+### 2. Create a ModuleInfo
+
+Create a ModuleInfo resource to install the plugin. The following example includes common configuration parameters:
+
+```yaml
+apiVersion: cluster.alauda.io/v1alpha1
+kind: ModuleInfo
+metadata:
+  annotations:
+    cpaas.io/display-name: local-auth
+    cpaas.io/module-name: '{"en": "Alauda Container Platform Cluster Authentication", "zh": "Alauda Container Platform Cluster Authentication"}'
+  labels:
+    cpaas.io/cluster-name: <cluster-name>   # target cluster name
+    cpaas.io/module-name: local-auth
+    cpaas.io/module-type: plugin
+    cpaas.io/product: Platform-Center
+  name: local-auth-<cluster-name>           # resource name
+spec:
+  version: v4.2.0                           # plugin version
+  config:
+    global:
+      masterNode: <node-ip-or-host>         # external access address, this address is also used as the external IDP redirect address
+      masterDefaultPort: 11780              # external access port
+```
+
+### Field Explanations
+
+**Metadata Fields:**
+
+* `name`: Temporary name for the cluster plugin. The platform will rename it after creation based on the content, in the format `<cluster-name>-<hash of content>`, e.g., `global-ee98c9991ea1464aaa8054bdacbab313`.
+* `label cpaas.io/cluster-name`: Specifies the cluster where the plugin should be installed.
+* `label cpaas.io/module-name`: Plugin name, must match the ModulePlugin resource.
+* `label cpaas.io/module-type`: Fixed field, must be `plugin`; missing this field causes installation failure.
+
+**Spec Fields:**
+
+* `.spec.version`: Specifies the plugin version to install, must match `.spec.version` in ModuleConfig.
+* `.spec.config`: Plugin configuration. If the corresponding ModuleConfig is empty, this field can be left empty.
+* `.spec.config.global.masterNode`: External access address, also used as the external IDP redirect address.
+* `.spec.config.global.masterDefaultPort`: External access port (default: 11780).

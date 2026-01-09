@@ -1,0 +1,279 @@
+---
+weight: 20
+---
+
+# Cluster Authentication
+
+This plugin provides independent authentication integration for global cluster failure scenarios. When the global cluster fails, users can still log in through this service to access and operate the Kubernetes cluster, maintaining permissions consistent with the state before the global cluster failure (note: group permissions are not supported).
+
+## Overview
+
+The authentication integration uses Connector Custom Resources (CRs) to configure OIDC or LDAP identity providers.
+
+### Connector CR Basics
+
+- **CR Kind**: `Connector` (apiVersion: `dex.coreos.com/v1`)
+- **Namespace**: `cpaas-system`
+- **Config Format**: The `config` field must be a base64-encoded JSON string. Create your configuration as a JSON file, then encode it using `base64 -w0 config.json` (on macOS, the `-w0` flag can be omitted).
+
+**Connector CR Template:**
+
+```yaml
+apiVersion: dex.coreos.com/v1
+kind: Connector
+metadata:
+  name: <connector-name>
+  namespace: cpaas-system
+  labels:
+    cpaas.io/idp.version: v2  # connector version marker
+spec:
+  type: <oidc|ldap>           # connector type
+  id: <connector-id>          # globally unique in the platform
+  name: <display-name>        # shown on login screen
+  config: <base64-encoded-connector-config-json>
+```
+
+## Integrated with LDAP
+
+### LDAP Configuration
+
+**Example LDAP connector configuration:**
+
+```json
+{
+  "bindDN": "cn=Administrator,cn=Users,dc=example,dc=com",
+  "bindPW": "<password>",
+  "host": "ldap.example.com:389",
+  "insecureNoSSL": true,
+  "insecureSkipVerify": true,
+  "startTLS": true,
+  "userSearch": {
+    "baseDN": "dc=example,dc=com",
+    "filter": "(objectClass=organizationalPerson)",
+    "idAttr": "distinguishedName",
+    "nameAttr": "cn",
+    "username": "cn",
+    "emailAttr": "mail"
+  }
+}
+```
+
+**Field descriptions:**
+
+| Field | Description | Required | Notes |
+|-------|-------------|----------|-------|
+| `bindDN` | Bind account DN | Yes | Needs search permission |
+| `bindPW` | Bind account password | Yes | Paired with bindDN |
+| `host` | LDAP host:port | Yes | 389+StartTLS or 636 (LDAPS) |
+| `insecureNoSSL` | Disable SSL | Yes | Set to `true` |
+| `startTLS` | Enable StartTLS | Yes | Set to `true` |
+| `insecureSkipVerify` | Skip TLS verify | Yes | Set to `true` |
+| `userSearch.baseDN` | Search base DN | Yes | Directory root or organizational DN |
+| `userSearch.filter` | User filter | Yes | e.g., `(objectClass=organizationalPerson)` |
+| `userSearch.idAttr` | Unique ID attribute | Yes | e.g., `distinguishedName` |
+| `userSearch.nameAttr` | Display/identity attribute | Yes | Used as platform-side identifier |
+| `userSearch.username` | Login attribute(s) | Yes | Comma-separated candidates |
+| `userSearch.emailAttr` | Email attribute | No | Omit if directory lacks email |
+
+### Apply LDAP Connector
+
+**Step-by-step instructions:**
+
+```bash
+# 1) Create JSON config file
+cat <<'EOF' > ldap-config.json
+{
+  "bindDN": "cn=Administrator,cn=Users,dc=example,dc=com",
+  "bindPW": "<password>",
+  "host": "ldap.example.com:389",
+  "insecureNoSSL": true,
+  "insecureSkipVerify": true,
+  "startTLS": true,
+  "userSearch": {
+    "baseDN": "dc=example,dc=com",
+    "filter": "(objectClass=organizationalPerson)",
+    "idAttr": "distinguishedName",
+    "nameAttr": "cn",
+    "username": "cn",
+    "emailAttr": "mail"
+  }
+}
+EOF
+
+# 2) Base64 encode the config
+LDAP_B64=$(base64 -w0 ldap-config.json)
+
+# 3) Create Connector CR
+cat <<EOF > ldap-connector.yaml
+apiVersion: dex.coreos.com/v1
+kind: Connector
+metadata:
+  name: ldap-sample
+  namespace: cpaas-system
+  labels:
+    cpaas.io/idp.version: v2
+spec:
+  type: ldap
+  id: ldap-sample
+  name: LDAP Sample
+  config: ${LDAP_B64}
+EOF
+
+# 4) Apply the Connector
+kubectl apply -f ldap-connector.yaml
+```
+
+## Integrated with OIDC
+
+### OIDC Configuration
+
+**Example OIDC connector configuration:**
+
+```json
+{
+  "issuer": "https://idp.example.com/auth/realms/master",
+  "issuerAlias": "",
+  "clientID": "<client-id>",
+  "clientSecret": "<client-secret>",
+  "redirectURI": "https://<masterNode>:11780/dex/callback",
+  "scopes": ["openid", "profile", "email", "groups"],
+  "claimMapping": {
+    "email": "email",
+    "preferred_username": "preferred_username",
+    "groups": "groups"
+  },
+  "getUserInfo": true,
+  "insecureSkipVerify": true
+}
+```
+
+**Field descriptions:**
+
+| Field | Description | Required | Notes |
+|-------|-------------|----------|-------|
+| `issuer` | Upstream IdP issuer | Yes | Must match IdP metadata |
+| `clientID` | OIDC client ID | Yes | Created in IdP |
+| `clientSecret` | OIDC client secret | Yes | Paired with clientID |
+| `redirectURI` | Dex callback | Yes | Must match IdP registration. Example: `https://<masterNode>:11780/dex/callback` |
+| `scopes` | OIDC scopes | Yes | Recommended: `openid`, `profile`, `email`, `groups` |
+| `claimMapping.email` | Email mapping | Yes | Map to upstream claim |
+| `claimMapping.preferred_username` | Username mapping | Optional | Map to upstream claim |
+| `claimMapping.groups` | Group mapping | Optional | If upstream provides groups |
+| `getUserInfo` | Call UserInfo endpoint | No | Set to `true` if ID Token lacks fields |
+| `insecureSkipVerify` | Skip TLS verify | Yes | Set to `true` (per current config) |
+
+### Apply OIDC Connector
+
+**Step-by-step instructions:**
+
+```bash
+# 1) Create JSON config file
+cat <<'EOF' > oidc-config.json
+{
+  "issuer": "https://idp.example.com/auth/realms/master",
+  "issuerAlias": "",
+  "clientID": "<client-id>",
+  "clientSecret": "<client-secret>",
+  "redirectURI": "https://<masterNode>:11780/dex/callback",
+  "scopes": ["openid", "profile", "email", "groups"],
+  "claimMapping": {
+    "email": "email",
+    "preferred_username": "preferred_username",
+    "groups": "groups"
+  },
+  "getUserInfo": true,
+  "insecureSkipVerify": true
+}
+EOF
+
+# 2) Base64 encode the config
+OIDC_B64=$(base64 -w0 oidc-config.json)
+
+# 3) Create Connector CR
+cat <<EOF > oidc-connector.yaml
+apiVersion: dex.coreos.com/v1
+kind: Connector
+metadata:
+  name: oidc-sample
+  namespace: cpaas-system
+  labels:
+    cpaas.io/idp.version: v2
+spec:
+  type: oidc
+  id: oidc-sample
+  name: OIDC Sample
+  config: ${OIDC_B64}
+EOF
+
+# 4) Apply the Connector
+kubectl apply -f oidc-connector.yaml
+```
+
+:::info
+**Important Notes:**
+- Place Connector CRs in the `cpaas-system` namespace to align with the global cluster setup.
+- Base64 encoding: On Linux use `base64 -w0 config.json`, on macOS the `-w0` flag can be omitted.
+:::
+
+## Use AC CLI to Connect to ACP
+
+This section describes how to use the AC CLI to authenticate and connect to the ACP (Application Control Plane) using the configured identity providers.
+
+### Prerequisites
+
+Before using AC CLI to connect, ensure the following:
+
+1. **AC CLI is installed** (version >= 1.1)
+2. **Cluster is reachable** over the network
+3. **External access address** of the plugin auth service: `https://<masterNode>:<masterDefaultPort>` (default `masterDefaultPort` is `11780`)
+4. **Connector is configured** for the target IDP and the Connector CR name is confirmed
+
+**Verify the Connector configuration:**
+
+```bash
+kubectl get connector -n cpaas-system
+```
+
+**Example output:**
+
+```
+NAME        AGE
+ldap-test   7m53s
+oidc-test   6m27s
+```
+
+### Command Examples
+
+**Login with LDAP identity provider:**
+
+```bash
+ac login https://<masterNode>:11780 \
+  --idp <ldap-connector-name> \
+  --workload \
+  --auth-type ldap \
+  --username '<username>' \
+  --password '<password>'
+```
+
+**Login with OIDC identity provider:**
+
+```bash
+ac login https://<masterNode>:11780 \
+  --idp <oidc-connector-name> \
+  --workload \
+  --auth-type oidc
+```
+
+:::tip
+For OIDC authentication, if interactive authentication is required, follow the CLI prompts to complete the login process.
+:::
+
+### Command Parameters
+
+| Parameter | Description | Required | Notes |
+|-----------|-------------|----------|-------|
+| `--idp` | Connector name | Yes | The name of the Connector CR configured in `cpaas-system` namespace |
+| `--workload` | Login to workload cluster | Yes | Flag to indicate logging in to the workload cluster |
+| `--auth-type` | Authentication type | Yes | Supported values: `ldap`, `oidc` |
+| `--username` | Username for LDAP | Yes (LDAP only) | Used for LDAP authentication |
+| `--password` | Password for LDAP | Yes (LDAP only) | Used for LDAP authentication |
