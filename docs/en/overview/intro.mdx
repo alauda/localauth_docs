@@ -2,9 +2,27 @@
 weight: 10
 ---
 
-
 # Introduction
 
-This plugin provides an independent authentication integration capability for global cluster failure scenarios. If the global cluster fails, users can still log in through this service to access and operate the Kubernetes cluster, while keeping permissions consistent with the state before the global cluster failure (group permissions are not supported).
+The Alauda Container Platform Cluster Authentication plugin provides an independent authentication integration capability for global cluster failure scenarios. When the global cluster fails, users can still log in through this service to access and operate Kubernetes clusters, maintaining permissions consistent with the state before the global cluster failure.
 
-To ensure the plugin continues to work during a global cluster failure, ACP is recommended to use a third-party image registry.
+## Key Features
+
+- **Independent Authentication Service**: Provides a standalone authentication service that operates independently of the global cluster
+- **Multiple Identity Provider Support**: Supports integration with OIDC and LDAP identity providers
+- **Permission Consistency**: Maintains user permissions consistent with the pre-failure state (note: group permissions are not supported)
+- **AC CLI Integration**: Supports authentication via AC CLI (version >= 1.1) for seamless cluster access
+- **High Availability**: Designed to ensure continuous operation during global cluster failures
+
+## Use Cases
+
+This plugin is essential for organizations that require:
+
+- **Business Continuity**: Maintain cluster access and operations even when the global cluster is unavailable
+- **Disaster Recovery**: Ensure authentication services remain functional during critical infrastructure failures
+- **Flexible Authentication**: Integrate with existing enterprise identity providers (LDAP/OIDC) without relying on global cluster services
+
+## Supported Identity Providers
+
+- **LDAP**: Full support for LDAP/Active Directory integration with configurable user search and attribute mapping
+- **OIDC**: Support for OpenID Connect providers with customizable claim mapping and scope configuration
