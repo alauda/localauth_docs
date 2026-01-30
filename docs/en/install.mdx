@@ -17,7 +17,7 @@ weight: 15
 2. Use violet to push the Alauda Container Platform Cluster Authentication plugin to ACP:
 
 ```bash
-violet push local-auth.amd64.v4.2.0.tgz \
+violet push local-auth.amd64.v1.0.0.tgz \
   --platform-address https://<platform-address>/ \
   --platform-username <username> \
   --platform-password '<password>'
@@ -72,11 +72,7 @@ metadata:
     cpaas.io/product: Platform-Center
   name: local-auth-<cluster-name>           # resource name
 spec:
-  version: v4.2.0                           # plugin version
-  config:
-    global:
-      masterNode: <node-ip-or-host>         # external access address, this address is also used as the external IDP redirect address
-      masterDefaultPort: 11780              # external access port
+  version: v1.0.0                           # plugin version
 ```
 
 ### Field Explanations
@@ -91,6 +87,3 @@ spec:
 **Spec Fields:**
 
 * `.spec.version`: Specifies the plugin version to install, must match `.spec.version` in ModuleConfig.
-* `.spec.config`: Plugin configuration. If the corresponding ModuleConfig is empty, this field can be left empty.
-* `.spec.config.global.masterNode`: External access address, also used as the external IDP redirect address.
-* `.spec.config.global.masterDefaultPort`: External access port (default: 11780).

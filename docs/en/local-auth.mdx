@@ -135,7 +135,7 @@ kubectl apply -f ldap-connector.yaml
   "issuerAlias": "",
   "clientID": "<client-id>",
   "clientSecret": "<client-secret>",
-  "redirectURI": "https://<masterNode>:11780/dex/callback",
+  "redirectURI": "https://<clusterEndpoint>:11780/dex/callback",
   "scopes": ["openid", "profile", "email", "groups"],
   "claimMapping": {
     "email": "email",
@@ -154,7 +154,7 @@ kubectl apply -f ldap-connector.yaml
 | `issuer` | Upstream IdP issuer | Yes | Must match IdP metadata |
 | `clientID` | OIDC client ID | Yes | Created in IdP |
 | `clientSecret` | OIDC client secret | Yes | Paired with clientID |
-| `redirectURI` | Dex callback | Yes | Must match IdP registration. Example: `https://<masterNode>:11780/dex/callback` |
+| `redirectURI` | Dex callback | Yes | Must match IdP registration. Example: `https://<clusterEndpoint>:11780/dex/callback` |
 | `scopes` | OIDC scopes | Yes | Recommended: `openid`, `profile`, `email`, `groups` |
 | `claimMapping.email` | Email mapping | Yes | Map to upstream claim |
 | `claimMapping.preferred_username` | Username mapping | Optional | Map to upstream claim |
@@ -174,7 +174,7 @@ cat <<'EOF' > oidc-config.json
   "issuerAlias": "",
   "clientID": "<client-id>",
   "clientSecret": "<client-secret>",
-  "redirectURI": "https://<masterNode>:11780/dex/callback",
+  "redirectURI": "https://<clusterEndpoint>:11780/dex/callback",
   "scopes": ["openid", "profile", "email", "groups"],
   "claimMapping": {
     "email": "email",
