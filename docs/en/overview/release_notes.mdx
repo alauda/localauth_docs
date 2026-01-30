@@ -8,31 +8,28 @@ weight: 40
 
 ### Features and Enhancements
 
-#### Feature Name
-Provide a brief introduction to the new or enhanced features.
+#### First Release
 
+- **Independent cluster authentication service**
+  - Provides an independent authentication integration capability for global cluster failure scenarios
+  - Ensures users can still log in to access and operate Kubernetes clusters when the global cluster is unavailable
+  - Keeps user permissions consistent with the state before the global cluster failure (group permissions not supported)
 
-### Deprecated
+- **Support for multiple identity providers (IDP)**
+  - **LDAP**: Supports integration with LDAP/Active Directory, including configurable user search and attribute mapping
+  - **OIDC**: Supports integration with OIDC identity providers, including scopes and claim mapping (email, username, groups)
+  - Uses `Connector` Custom Resources (CRs) in the `cpaas-system` namespace to manage IDP configurations
 
-#### Feature Name
-Provide a brief introduction to the deprecated features, including reasons for deprecation and suggested alternatives.
+- **AC CLI integration**
+  - Supports authentication and login to workload clusters via AC CLI (version >= 1.1)
+  - Provides CLI parameters for choosing IDP (`--idp`), authentication type (`--auth-type ldap|oidc`), and workload cluster login (`--workload`)
 
+- **ACP integration and deployment**
+  - Delivered as an Alauda Container Platform Cluster Authentication plugin package
+  - Supports installation via ACP web console and CLI
+  - Uses `ModuleInfo` resources to install the plugin to target clusters (with `.spec.version` set to `v1.0.0`)
 
-### Features to be phased out
+### Known Limitations
 
-#### Feature Name
-Provide a brief introduction to the features that will be deprecated, including reasons for deprecation and suggested alternatives.
+- Group permissions are not supported; only user-level permissions are maintained after global cluster failure.
 
-
-### Fixed Issues
-
-The list of bug fixes can be automatically generated from JIRA issues using the `release-notes-for-bugs` component provided by the documentation framework.
-
-For usage instructions, refer to the [Guide to Automatically Generating Release Notes](https://product-doc-guide.alauda.cn/guide/auto_gen_releasenotes.html).
-
-
-### Known Issues
-
-Similar to bug fixes, known issues can be automatically generated from JIRA issues using the `release-notes-for-bugs` component provided by the documentation framework.
-
-For usage instructions, refer to the [Guide to Automatically Generating Release Notes](https://product-doc-guide.alauda.cn/guide/auto_gen_releasenotes.html).
