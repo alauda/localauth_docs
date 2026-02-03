@@ -225,7 +225,7 @@ Before using AC CLI to connect, ensure the following:
 
 1. **AC CLI is installed** (version >= 1.1)
 2. **Cluster is reachable** over the network
-3. **External access address** of the plugin auth service: `https://<masterNode>:<masterDefaultPort>` (default `masterDefaultPort` is `11780`)
+3. **External access address** of the plugin auth service: `https://<clusterEndpoint>:<DefaultPort>` (default `DefaultPort` is `11780`)
 4. **Connector is configured** for the target IDP and the Connector CR name is confirmed
 
 **Verify the Connector configuration:**
@@ -247,7 +247,7 @@ oidc-test   6m27s
 **Login with LDAP identity provider:**
 
 ```bash
-ac login https://<masterNode>:11780 \
+ac login https://<clusterEndpoint>:11780 \
   --idp <ldap-connector-name> \
   --workload \
   --auth-type ldap \
@@ -258,7 +258,7 @@ ac login https://<masterNode>:11780 \
 **Login with OIDC identity provider:**
 
 ```bash
-ac login https://<masterNode>:11780 \
+ac login https://<clusterEndpoint>:11780 \
   --idp <oidc-connector-name> \
   --workload \
   --auth-type oidc
