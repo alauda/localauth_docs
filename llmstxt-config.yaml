@@ -1,0 +1,31 @@
+# llms.txt Generator Configuration
+# Target: alauda/localauth_docs (pure-docs repo)
+
+project_name: "Alauda Container Platform - Cluster Authentication Plugin"
+summary: "Documentation for the Alauda Container Platform Cluster Authentication plugin, which provides independent authentication for global cluster failure scenarios with LDAP/OIDC support."
+
+# File inclusion/exclusion
+include_patterns:
+  - "**/*.md"
+  - "**/*.mdx"
+
+exclude_patterns:
+  - "**/node_modules/**"
+  - "**/.git/**"
+  - "**/.yarn/**"
+  - "**/dist/**"
+  - "**/build/**"
+  - "**/llms.txt"
+  - "**/CHANGELOG.md"
+  - "**/CONTRIBUTING.md"
+  - "README.md"
+  - "**/.llmstxt-cache/**"
+
+# Start H2 grouping from this relative path. Does not limit scan depth.
+grouping_base_path: "."
+
+# Files per batch for AI processing
+batch_size: 15
+
+# Maximum words per generated file description
+description_max_words: 150
