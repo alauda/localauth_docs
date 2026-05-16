@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "generator_version": 3,
+  "project_name": "Alauda Container Platform - Cluster Authentication Plugin",
+  "summary": "Documentation for the Alauda Container Platform Cluster Authentication plugin, which provides independent authentication for global cluster failure scenarios with LDAP/OIDC support.",
+  "generated_at": "2026-05-16T09:37:36Z",
+  "include_patterns": [
+    "**/*.md",
+    "**/*.mdx"
+  ],
+  "exclude_patterns": [
+    "**/node_modules/**",
+    "**/.git/**",
+    "**/.yarn/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/llms.txt",
+    "**/CHANGELOG.md",
+    "**/CONTRIBUTING.md",
+    "README.md",
+    "**/.llmstxt-cache/**",
+    ".llmstxt-cache/**",
+    "llms.txt",
+    "llmstxt-state.json",
+    "**/llmstxt-state.json"
+  ],
+  "grouping_base_path": ".",
+  "description_max_words": 150,
+  "files": {
+    "docs/en/index.mdx": {
+      "sha256": "ea8d719fb06b69c8f8fa90c79d3ec2a67457c854f2c664fb78f523febe3f6960",
+      "size": 48,
+      "description": "Top-level English documentation landing page that renders an empty `<Overview overviewHeaders={[]} />` component, serving as the navigation entry point for the Alauda Container Platform Cluster Authentication (local-auth) plugin docs.",
+      "generation_method": "ai_agent_reading",
+      "updated_at": "2026-05-16T09:37:36Z"
+    },
+    "docs/en/install.mdx": {
+      "sha256": "c1482ea8f307191382103216d3ac6d1974e05548acebe032887a4ad19ed09f5f",
+      "size": 2880,
+      "description": "Installation guide for the local-auth plugin on ACP (>= v4.2) using AC CLI (>= v1.1). Covers downloading the plugin package from AlaudaCloud, uploading via `violet push`, and two install paths: the Web Console Marketplace flow and a CLI flow that verifies `ModulePlugin`/`ModuleConfig` resources in the `global` cluster and then applies a `ModuleInfo` CR (apiVersion `cluster.alauda.io/v1alpha1`) with required `cpaas.io/cluster-name`, `cpaas.io/module-name`, and `cpaas.io/module-type=plugin` labels plus a `spec.version`. Emphasizes installing the plugin before any global cluster failure occurs.",
+      "generation_method": "ai_agent_reading",
+      "updated_at": "2026-05-16T09:37:36Z"
+    },
+    "docs/en/local-auth.mdx": {
+      "sha256": "275f54efdde05aa2ab538669dcf3768c1641ddae18511e5799283f4ba825fac8",
+      "size": 8318,
+      "description": "Operator reference for configuring cluster authentication via `Connector` CRs (apiVersion `dex.coreos.com/v1`, namespace `cpaas-system`, label `cpaas.io/idp.version: v2`) whose `config` field is a base64-encoded JSON blob. Provides full LDAP examples (`bindDN`, `bindPW`, `host`, `startTLS`, `userSearch.baseDN/filter/idAttr/nameAttr/username/emailAttr`) and OIDC examples (`issuer`, `clientID`, `clientSecret`, `redirectURI` pointing at `https://<clusterEndpoint>:11780/dex/callback`, `scopes`, `claimMapping`, `getUserInfo`), with end-to-end `kubectl apply` workflows and `ac login --idp <connector> --workload --auth-type ldap|oidc` CLI usage against port 11780.",
+      "generation_method": "ai_agent_reading",
+      "updated_at": "2026-05-16T09:37:36Z"
+    },
+    "docs/en/overview/index.mdx": {
+      "sha256": "f2173503b518976d2ce0b364648e0aec87c10f0ae2f33957a7f310f0521283fd",
+      "size": 44,
+      "description": "Overview section landing page that renders the auto-generated `<Overview />` component to list child pages (Introduction and Release Notes) for the Cluster Authentication plugin docs.",
+      "generation_method": "ai_agent_reading",
+      "updated_at": "2026-05-16T09:37:36Z"
+    },
+    "docs/en/overview/intro.mdx": {
+      "sha256": "f11c3f273b0c096b82e71ba2b866c264092c82c858af9f6635a1624215890c9d",
+      "size": 1687,
+      "description": "Introduces the Alauda Container Platform Cluster Authentication plugin as a standalone authentication service that keeps Kubernetes cluster login working when the global cluster fails, preserving pre-failure user permissions (groups excluded). Lists key features (independent auth service, OIDC/LDAP IdP support, AC CLI >= 1.1 integration, HA design) and business-continuity / disaster-recovery use cases tied to enterprise LDAP/Active Directory and OpenID Connect providers.",
+      "generation_method": "ai_agent_reading",
+      "updated_at": "2026-05-16T09:37:36Z"
+    },
+    "docs/en/overview/release_notes.mdx": {
+      "sha256": "861c601935cc9fa958df4229f32da2ef5eeb0cf6ec0ba825dee2f24e4cc01cb7",
+      "size": 1193,
+      "description": "Release notes scaffold for plugin version 1.0.0 with placeholder sections for new features, deprecations, features-to-be-phased-out, fixed issues, and known issues. Points to the shared `release-notes-for-bugs` framework component and the external Guide to Automatically Generating Release Notes at product-doc-guide.alauda.cn for auto-population from JIRA.",
+      "generation_method": "ai_agent_reading",
+      "updated_at": "2026-05-16T09:37:36Z"
+    }
+  }
+}
