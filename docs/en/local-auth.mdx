@@ -4,7 +4,7 @@ weight: 20
 
 # Cluster Authentication
 
-This plugin provides independent authentication integration for `global` cluster failure scenarios. When the `global` cluster fails, users can still log in through this service to access and operate the Kubernetes cluster, maintaining permissions consistent with the state before the `global` cluster failure (note: group permissions are not supported).
+This Cluster Plugin provides independent authentication integration for `global` cluster failure scenarios. When the `global` cluster fails, users can still log in through this service to access and operate the Kubernetes cluster, maintaining permissions consistent with the state before the `global` cluster failure (note: group permissions are not supported).
 
 ## Overview
 
@@ -225,7 +225,7 @@ Before using AC CLI to connect, ensure the following:
 
 1. **AC CLI is installed** (version >= 1.1)
 2. **Cluster is reachable** over the network
-3. **External access address** of the plugin auth service: `https://<clusterEndpoint>:<DefaultPort>` (default `DefaultPort` is `11780`)
+3. **External access address** of the Cluster Plugin's authentication service: `https://<clusterEndpoint>:<DefaultPort>` (default `DefaultPort` is `11780`)
 4. **Connector is configured** for the target IDP and the Connector CR name is confirmed
 
 **Verify the Connector configuration:**
