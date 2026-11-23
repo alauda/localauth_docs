@@ -4,7 +4,7 @@ weight: 20
 
 # Cluster Authentication
 
-This plugin provides independent authentication integration for global cluster failure scenarios. When the global cluster fails, users can still log in through this service to access and operate the Kubernetes cluster, maintaining permissions consistent with the state before the global cluster failure (note: group permissions are not supported).
+This plugin provides independent authentication integration for `global` cluster failure scenarios. When the `global` cluster fails, users can still log in through this service to access and operate the Kubernetes cluster, maintaining permissions consistent with the state before the `global` cluster failure (note: group permissions are not supported).
 
 ## Overview
 
@@ -211,7 +211,7 @@ kubectl apply -f oidc-connector.yaml
 
 :::info
 **Important Notes:**
-- Place Connector CRs in the `cpaas-system` namespace to align with the global cluster setup.
+- Place Connector CRs in the `cpaas-system` namespace to align with the `global` cluster setup.
 - Base64 encoding: On Linux use `base64 -w0 config.json`, on macOS the `-w0` flag can be omitted.
 :::
 
