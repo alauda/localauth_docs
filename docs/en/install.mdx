@@ -8,13 +8,13 @@ weight: 15
 
 - ACP version: >= v4.2
 - AC CLI version: >= v1.1
-- This plugin must be installed before the global cluster failure occurs.
+- This Cluster Plugin must be installed before the `global` cluster failure occurs.
 
 ## Download and Import
 
-1. Login to AlaudaCloud and download the latest Alauda Container Platform Cluster Authentication plugin package.
+1. Login to AlaudaCloud and download the latest Alauda Container Platform Cluster Authentication Cluster Plugin package.
 
-2. Use violet to push the Alauda Container Platform Cluster Authentication plugin to ACP:
+2. Use violet to push the Alauda Container Platform Cluster Authentication Cluster Plugin to ACP:
 
    ```bash
     violet push local-auth.amd64.v1.0.0.tgz \
@@ -29,18 +29,18 @@ weight: 15
 
    - Navigate to Administrator > Marketplace > Upload Packages
    - Switch to the Cluster Plugin tab
-   - Locate the uploaded plugin name
-   - The plugin details will show the version(s) of the uploaded package
+   - Locate the uploaded Cluster Plugin by name
+   - The Cluster Plugin details will show the version(s) of the uploaded package
 
-2. Install the plugin:
+2. Install the Cluster Plugin:
 
-   - If the plugin shows a "ready" status, click Install
+   - If the Cluster Plugin shows a "ready" status, click Install
 
 ## Install via CLI
 
 ### 1. Check Available Versions
 
-Ensure the plugin has been published by checking for ModulePlugin and ModuleConfig resources in the `global` cluster:
+Ensure the Cluster Plugin has been published by checking for ModulePlugin and ModuleConfig resources in the `global` cluster:
 
 ```shell
 # kubectl get moduleplugins |grep local-auth
@@ -56,7 +56,7 @@ This indicates that the ModulePlugin `local-auth` exists in the cluster and is a
 
 ### 2. Create a ModuleInfo
 
-Create a ModuleInfo resource to install the plugin. The following example includes common configuration parameters:
+Create a ModuleInfo resource to install the Cluster Plugin. The following example includes common configuration parameters:
 
 ```yaml
 apiVersion: cluster.alauda.io/v1alpha1
@@ -79,11 +79,11 @@ spec:
 
 **Metadata Fields:**
 
-* `name`: Temporary name for the cluster plugin. The platform will rename it after creation based on the content, in the format `<cluster-name>-<hash of content>`, e.g., `global-ee98c9991ea1464aaa8054bdacbab313`.
-* `label cpaas.io/cluster-name`: Specifies the cluster where the plugin should be installed.
-* `label cpaas.io/module-name`: Plugin name, must match the ModulePlugin resource.
+* `name`: Temporary name for the Cluster Plugin. The platform will rename it after creation based on the content, in the format `<cluster-name>-<hash of content>`, e.g., `global-ee98c9991ea1464aaa8054bdacbab313`.
+* `label cpaas.io/cluster-name`: Specifies the cluster where the Cluster Plugin should be installed.
+* `label cpaas.io/module-name`: Cluster Plugin name, must match the ModulePlugin resource.
 * `label cpaas.io/module-type`: Fixed field, must be `plugin`; missing this field causes installation failure.
 
 **Spec Fields:**
 
-* `.spec.version`: Specifies the plugin version to install, must match `.spec.version` in ModuleConfig.
+* `.spec.version`: Specifies the Cluster Plugin version to install, must match `.spec.version` in ModuleConfig.
